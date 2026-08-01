@@ -83,53 +83,56 @@ class MediaRepositoryImpl @Inject constructor(
     }
 
     private fun loadAlbums(): List<Album> {
-        val albums = mutableListOf<Album>()
+        val albumMap = mutableMapOf<Long, Album>()
 
-        // Query images
         val imageUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-        val imageProjection = arrayOf(
-            "COUNT(*) as count",
+        val projection = arrayOf(
+            MediaStore.Images.Media._ID,
             MediaStore.Images.Media.BUCKET_ID,
             MediaStore.Images.Media.BUCKET_DISPLAY_NAME,
-            "MIN(${MediaStore.Images.Media._ID}) as coverId",
-            "MAX(${MediaStore.Images.Media.DATE_MODIFIED}) as dateModified"
+            MediaStore.Images.Media.DATE_MODIFIED
         )
 
         contentResolver.query(
             imageUri,
-            imageProjection,
+            projection,
             null,
             null,
             "${MediaStore.Images.Media.BUCKET_DISPLAY_NAME} ASC"
         )?.use { cursor ->
-            while (cursor.moveToNext()) {
-                val bucketId = cursor.getLong(
-                    cursor.getColumnIndexOrThrow(MediaStore.Images.Media.BUCKET_ID)
-                )
-                val bucketName = cursor.getString(
-                    cursor.getColumnIndexOrThrow(MediaStore.Images.Media.BUCKET_DISPLAY_NAME)
-                ) ?: "Unknown"
-                val count = cursor.getInt(cursor.getColumnIndexOrThrow("count"))
-                val coverId = cursor.getLong(cursor.getColumnIndexOrThrow("coverId"))
-                val dateMod = cursor.getLong(cursor.getColumnIndexOrThrow("dateModified"))
-                val coverUri = ContentUris.withAppendedId(
-                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI, coverId
-                ).toString()
+            val idCol = cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID)
+            val bucketIdCol = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.BUCKET_ID)
+            val bucketNameCol = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.BUCKET_DISPLAY_NAME)
+            val dateModCol = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATE_MODIFIED)
 
-                albums.add(
-                    Album(
+            while (cursor.moveToNext()) {
+                val bucketId = cursor.getLong(bucketIdCol)
+                val bucketName = cursor.getString(bucketNameCol) ?: "Unknown"
+                val imageId = cursor.getLong(idCol)
+                val dateMod = cursor.getLong(dateModCol)
+
+                val existing = albumMap[bucketId]
+                if (existing == null) {
+                    val coverUri = ContentUris.withAppendedId(imageUri, imageId).toString()
+                    albumMap[bucketId] = Album(
                         bucketId = bucketId,
                         bucketName = bucketName,
                         coverUri = coverUri,
-                        itemCount = count,
-                        photoCount = count,
+                        itemCount = 1,
+                        photoCount = 1,
                         dateModified = dateMod
                     )
-                )
+                } else {
+                    albumMap[bucketId] = existing.copy(
+                        itemCount = existing.itemCount + 1,
+                        photoCount = existing.photoCount + 1,
+                        dateModified = maxOf(existing.dateModified, dateMod)
+                    )
+                }
             }
         }
 
-        return albums
+        return albumMap.values.toList()
     }
 
     private fun loadMedia(bucketId: Long, filterType: MediaType?): List<MediaItem> {
