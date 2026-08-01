@@ -139,8 +139,13 @@ class MediaRepositoryImpl @Inject constructor(
         val mediaItems = mutableListOf<MediaItem>()
 
         val projection = getMediaProjection()
-        val selection = "${MediaStore.MediaColumns.BUCKET_ID} = ?"
-        val selectionArgs = arrayOf(bucketId.toString())
+
+        // bucketId = 0 means "all photos" - no bucket filter
+        val (selection, selectionArgs) = if (bucketId == 0L) {
+            null to emptyArray()
+        } else {
+            "${MediaStore.MediaColumns.BUCKET_ID} = ?" to arrayOf(bucketId.toString())
+        }
 
         when (filterType) {
             MediaType.IMAGE -> {

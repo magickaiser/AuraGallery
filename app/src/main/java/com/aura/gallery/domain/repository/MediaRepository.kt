@@ -17,6 +17,7 @@ interface MediaRepository {
 
     /**
      * Returns media items for a specific album.
+     * Use bucketId = 0 to get all media across all albums.
      */
     fun getMediaByAlbum(bucketId: Long, filterType: MediaType? = null): Flow<List<MediaItem>>
 
