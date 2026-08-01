@@ -37,7 +37,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.aura.gallery.presentation.components.EmptyStateView
@@ -58,6 +60,7 @@ fun MediaViewerScreen(
     var offsetX by remember { mutableFloatStateOf(0f) }
     var offsetY by remember { mutableFloatStateOf(0f) }
     var isUiVisible by remember { mutableStateOf(true) }
+    var containerSize by remember { mutableStateOf(IntSize.Zero) }
 
     Scaffold(
         topBar = {
@@ -116,7 +119,8 @@ fun MediaViewerScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .background(Color.Black),
+                .background(Color.Black)
+                .onSizeChanged { containerSize = it },
             contentAlignment = Alignment.Center
         ) {
             if (uiState.isLoading) {
@@ -136,11 +140,20 @@ fun MediaViewerScreen(
                             translationX = offsetX,
                             translationY = offsetY
                         )
-                        .pointerInput(Unit) {
+                        .pointerInput(scale) {
                             detectTransformGestures { _, pan, zoom, _ ->
-                                scale = (scale * zoom).coerceIn(1f, 5f)
-                                offsetX += pan.x
-                                offsetY += pan.y
+                                val newScale = (scale * zoom).coerceIn(1f, 5f)
+                                scale = newScale
+
+                                if (newScale > 1f && containerSize != IntSize.Zero) {
+                                    val maxX = (containerSize.width * (newScale - 1f)) / 2f
+                                    val maxY = (containerSize.height * (newScale - 1f)) / 2f
+                                    offsetX = (offsetX + pan.x).coerceIn(-maxX, maxX)
+                                    offsetY = (offsetY + pan.y).coerceIn(-maxY, maxY)
+                                } else {
+                                    offsetX = 0f
+                                    offsetY = 0f
+                                }
                             }
                         }
                         .pointerInput(Unit) {
