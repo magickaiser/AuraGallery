@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">AuraGallery</string>
+    <string name="tab_albums">Álbumes</string>
+    <string name="tab_favorites">Favoritos</string>
+    <string name="tab_trash">Papelera</string>
+    <string name="no_media_found">No se encontraron archivos multimedia</string>
+    <string name="no_albums_found">No se encontraron álbumes</string>
+    <string name="no_favorites">No hay favoritos</string>
+    <string name="trash_empty">La papelera está vacía</string>
+    <string name="album_all">Todas las fotos</string>
+    <string name="album_videos">Videos</string>
+    <string name="filter_all">Todos</string>
+    <string name="filter_photos">Fotos</string>
+    <string name="filter_videos">Videos</string>
+    <string name="restore">Restaurar</string>
+    <string name="delete_permanently">Eliminar permanentemente</string>
+    <string name="share">Compartir</string>
+    <string name="add_to_favorites">Añadir a favoritos</string>
+    <string name="remove_from_favorites">Quitar de favoritos</string>
+    <string name="move_to_trash">Mover a papelera</string>
+    <string name="media_deleted">Archivo eliminado</string>
+    <string name="media_restored">Archivo restaurado</string>
+    <string name="dark_mode">Modo oscuro</string>
+    <string name="light_mode">Modo claro</string>
+    <string name="system_default">Predeterminado del sistema</string>
+    <string name="photos_count">%d fotos</string>
+    <string name="videos_count">%d videos</string>
+    <string name="items_count">%d elementos</string>
+</resources>
