@@ -74,7 +74,7 @@ fun GalleryScreen(
                                 contentDescription = "Añadir a favoritos"
                             )
                         }
-                        IconButton(onClick = { viewModel.trashSelected() }) {
+                        IconButton(onClick = { viewModel.deleteSelected() }) {
                             Icon(
                                 imageVector = Icons.Filled.Delete,
                                 contentDescription = "Mover a papelera"

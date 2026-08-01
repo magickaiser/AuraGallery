@@ -7,7 +7,6 @@ import com.aura.gallery.domain.model.MediaItem
 import com.aura.gallery.domain.model.MediaType
 import com.aura.gallery.domain.usecase.DeleteMediaUseCase
 import com.aura.gallery.domain.usecase.GetMediaByAlbumUseCase
-import com.aura.gallery.domain.usecase.MoveToTrashUseCase
 import com.aura.gallery.domain.usecase.ToggleFavoriteUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -30,7 +29,6 @@ data class GalleryUiState(
 class GalleryViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val getMediaByAlbumUseCase: GetMediaByAlbumUseCase,
-    private val moveToTrashUseCase: MoveToTrashUseCase,
     private val toggleFavoriteUseCase: ToggleFavoriteUseCase,
     private val deleteMediaUseCase: DeleteMediaUseCase
 ) : ViewModel() {
@@ -84,11 +82,11 @@ class GalleryViewModel @Inject constructor(
         )
     }
 
-    fun trashSelected() {
+    fun deleteSelected() {
         viewModelScope.launch {
             val selectedMedia = _uiState.value.filteredItems
                 .filter { it.id in _uiState.value.selectedIds }
-            selectedMedia.forEach { moveToTrashUseCase(it) }
+            selectedMedia.forEach { deleteMediaUseCase(it) }
             exitSelectionMode()
         }
     }
@@ -98,15 +96,6 @@ class GalleryViewModel @Inject constructor(
             val selectedMedia = _uiState.value.filteredItems
                 .filter { it.id in _uiState.value.selectedIds }
             selectedMedia.forEach { toggleFavoriteUseCase(it) }
-            exitSelectionMode()
-        }
-    }
-
-    fun deleteSelected() {
-        viewModelScope.launch {
-            val selectedMedia = _uiState.value.filteredItems
-                .filter { it.id in _uiState.value.selectedIds }
-            selectedMedia.forEach { deleteMediaUseCase(it) }
             exitSelectionMode()
         }
     }

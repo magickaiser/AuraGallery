@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.room.Room
 import com.aura.gallery.data.local.db.AppDatabase
 import com.aura.gallery.data.local.db.dao.FavoriteDao
-import com.aura.gallery.data.local.db.dao.TrashDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -29,10 +28,5 @@ object DatabaseModule {
     @Provides
     fun provideFavoriteDao(database: AppDatabase): FavoriteDao {
         return database.favoriteDao()
-    }
-
-    @Provides
-    fun provideTrashDao(database: AppDatabase): TrashDao {
-        return database.trashDao()
     }
 }

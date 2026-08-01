@@ -1,13 +1,9 @@
 package com.aura.gallery.data.mapper
 
-import android.content.ContentResolver
 import android.content.ContentUris
-import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import com.aura.gallery.data.local.db.entity.FavoriteEntity
-import com.aura.gallery.data.local.db.entity.TrashEntity
-import com.aura.gallery.domain.model.Album
 import com.aura.gallery.domain.model.MediaItem
 
 /**
@@ -17,11 +13,6 @@ object MediaMapper {
 
     fun toMediaItem(cursor: android.database.Cursor): MediaItem {
         val idCol = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns._ID)
-        val dataCol = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.RELATIVE_PATH)
-        } else {
-            cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA)
-        }
         val nameCol = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DISPLAY_NAME)
         val mimeCol = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.MIME_TYPE)
         val sizeCol = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.SIZE)
@@ -68,22 +59,6 @@ object MediaMapper {
         )
     }
 
-    fun toTrashEntity(mediaItem: MediaItem): TrashEntity {
-        return TrashEntity(
-            mediaId = mediaItem.id,
-            uri = mediaItem.uri,
-            displayName = mediaItem.displayName,
-            mimeType = mediaItem.mimeType,
-            size = mediaItem.size,
-            dateAdded = mediaItem.dateAdded,
-            dateModified = mediaItem.dateModified,
-            width = mediaItem.width,
-            height = mediaItem.height,
-            bucketId = mediaItem.bucketId,
-            bucketName = mediaItem.bucketName
-        )
-    }
-
     fun toMediaItem(entity: FavoriteEntity): MediaItem {
         return MediaItem(
             id = entity.mediaId,
@@ -98,23 +73,6 @@ object MediaMapper {
             bucketId = entity.bucketId,
             bucketName = entity.bucketName,
             isFavorite = true
-        )
-    }
-
-    fun toMediaItem(entity: TrashEntity): MediaItem {
-        return MediaItem(
-            id = entity.mediaId,
-            uri = entity.uri,
-            displayName = entity.displayName,
-            mimeType = entity.mimeType,
-            size = entity.size,
-            dateAdded = entity.dateAdded,
-            dateModified = entity.dateModified,
-            width = entity.width,
-            height = entity.height,
-            bucketId = entity.bucketId,
-            bucketName = entity.bucketName,
-            isInTrash = true
         )
     }
 }

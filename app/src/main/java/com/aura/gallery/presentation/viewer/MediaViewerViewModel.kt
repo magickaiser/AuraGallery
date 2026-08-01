@@ -7,7 +7,6 @@ import com.aura.gallery.domain.model.MediaItem
 import com.aura.gallery.domain.repository.FavoriteRepository
 import com.aura.gallery.domain.repository.MediaRepository
 import com.aura.gallery.domain.usecase.DeleteMediaUseCase
-import com.aura.gallery.domain.usecase.MoveToTrashUseCase
 import com.aura.gallery.domain.usecase.ToggleFavoriteUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,7 +27,6 @@ class MediaViewerViewModel @Inject constructor(
     private val mediaRepository: MediaRepository,
     private val favoriteRepository: FavoriteRepository,
     private val toggleFavoriteUseCase: ToggleFavoriteUseCase,
-    private val moveToTrashUseCase: MoveToTrashUseCase,
     private val deleteMediaUseCase: DeleteMediaUseCase
 ) : ViewModel() {
 
@@ -73,14 +71,6 @@ class MediaViewerViewModel @Inject constructor(
                 _uiState.value = _uiState.value.copy(
                     isFavorite = !_uiState.value.isFavorite
                 )
-            }
-        }
-    }
-
-    fun moveToTrash() {
-        viewModelScope.launch {
-            _uiState.value.mediaItem?.let { item ->
-                moveToTrashUseCase(item)
             }
         }
     }

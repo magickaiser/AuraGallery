@@ -121,7 +121,7 @@ fun MediaViewerScreen(
                         )
                     }
                     IconButton(onClick = {
-                        viewModel.moveToTrash()
+                        viewModel.deletePermanently()
                         onNavigateBack()
                     }) {
                         Icon(

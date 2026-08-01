@@ -1,10 +1,8 @@
 package com.aura.gallery.presentation.components
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.PhotoAlbum
-import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.PhotoAlbum
 import androidx.compose.material3.Icon
@@ -38,12 +36,6 @@ fun BottomNavBar(
             route = "favorites",
             selectedIcon = Icons.Filled.Favorite,
             unselectedIcon = Icons.Outlined.Favorite
-        ),
-        BottomNavItem(
-            label = "Papelera",
-            route = "trash",
-            selectedIcon = Icons.Filled.Delete,
-            unselectedIcon = Icons.Outlined.Delete
         )
     )
 

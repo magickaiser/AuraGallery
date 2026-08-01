@@ -21,5 +21,4 @@ sealed class Screen(val route: String) {
         }
     }
     data object Favorites : Screen("favorites")
-    data object Trash : Screen("trash")
 }

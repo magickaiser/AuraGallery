@@ -14,12 +14,10 @@ import com.aura.gallery.presentation.components.GallerySharedViewModel
 import com.aura.gallery.presentation.favorites.FavoritesScreen
 import com.aura.gallery.presentation.gallery.GalleryScreen
 import com.aura.gallery.presentation.player.VideoPlayerScreen
-import com.aura.gallery.presentation.trash.TrashScreen
 import com.aura.gallery.presentation.viewer.MediaViewerScreen
 
 @Composable
 fun NavGraph(navController: NavHostController) {
-    // Shared ViewModel scoped to activity — allows swipe between images
     val sharedViewModel: GallerySharedViewModel = hiltViewModel()
 
     NavHost(
@@ -130,10 +128,6 @@ fun NavGraph(navController: NavHostController) {
                     }
                 }
             )
-        }
-
-        composable(Screen.Trash.route) {
-            TrashScreen()
         }
     }
 }

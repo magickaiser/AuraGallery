@@ -43,8 +43,7 @@ private fun AuraGalleryApp() {
     // Determine if bottom bar should be shown
     val showBottomBar = currentRoute in listOf(
         Screen.Albums.route,
-        Screen.Favorites.route,
-        Screen.Trash.route
+        Screen.Favorites.route
     )
 
     Scaffold(
