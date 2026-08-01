@@ -26,12 +26,12 @@ class AlbumsViewModel @Inject constructor(
     val uiState: StateFlow<AlbumsUiState> = _uiState.asStateFlow()
 
     init {
-        loadAlbums()
+        // Defer loading until permissions are confirmed
     }
 
     fun setPermissionsGranted(granted: Boolean) {
         _uiState.value = _uiState.value.copy(hasPermissions = granted)
-        if (granted && _uiState.value.albums.isEmpty()) {
+        if (granted) {
             loadAlbums()
         }
     }
