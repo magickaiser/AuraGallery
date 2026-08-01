@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.aura.gallery.domain.model.MediaItem
 import com.aura.gallery.presentation.components.EmptyStateView
+import com.aura.gallery.presentation.components.GallerySharedViewModel
 import com.aura.gallery.presentation.components.MediaThumbnail
 import com.aura.gallery.presentation.components.MediaTypeFilter
 
@@ -36,7 +37,8 @@ fun GalleryScreen(
     bucketName: String,
     onMediaClick: (MediaItem) -> Unit,
     onNavigateBack: () -> Unit,
-    viewModel: GalleryViewModel = hiltViewModel()
+    viewModel: GalleryViewModel = hiltViewModel(),
+    sharedViewModel: GallerySharedViewModel
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -91,7 +93,10 @@ fun GalleryScreen(
                     ) { mediaItem ->
                         MediaThumbnail(
                             mediaItem = mediaItem,
-                            onClick = { onMediaClick(mediaItem) }
+                            onClick = {
+                                sharedViewModel.setMediaList(uiState.filteredItems, mediaItem.id)
+                                onMediaClick(mediaItem)
+                            }
                         )
                     }
                 }

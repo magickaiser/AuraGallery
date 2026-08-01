@@ -53,6 +53,19 @@ class MediaViewerViewModel @Inject constructor(
         }
     }
 
+    fun loadMediaById(id: Long) {
+        viewModelScope.launch {
+            _uiState.value = MediaViewerUiState(isLoading = true)
+            val item = mediaRepository.getMediaById(id)
+            val fav = favoriteRepository.isFavorite(id)
+            _uiState.value = MediaViewerUiState(
+                mediaItem = item,
+                isFavorite = fav,
+                isLoading = false
+            )
+        }
+    }
+
     fun toggleFavorite() {
         viewModelScope.launch {
             _uiState.value.mediaItem?.let { item ->

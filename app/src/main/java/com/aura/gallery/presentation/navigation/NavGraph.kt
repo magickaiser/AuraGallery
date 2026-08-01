@@ -3,12 +3,14 @@ package com.aura.gallery.presentation.navigation
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.aura.gallery.presentation.albums.AlbumsScreen
+import com.aura.gallery.presentation.components.GallerySharedViewModel
 import com.aura.gallery.presentation.favorites.FavoritesScreen
 import com.aura.gallery.presentation.gallery.GalleryScreen
 import com.aura.gallery.presentation.player.VideoPlayerScreen
@@ -17,6 +19,9 @@ import com.aura.gallery.presentation.viewer.MediaViewerScreen
 
 @Composable
 fun NavGraph(navController: NavHostController) {
+    // Shared ViewModel scoped to activity — allows swipe between images
+    val sharedViewModel: GallerySharedViewModel = hiltViewModel()
+
     NavHost(
         navController = navController,
         startDestination = Screen.Albums.route,
@@ -45,7 +50,6 @@ fun NavGraph(navController: NavHostController) {
             )
         }
     ) {
-        // Albums screen (main grid of albums)
         composable(Screen.Albums.route) {
             AlbumsScreen(
                 onAlbumClick = { bucketId, bucketName ->
@@ -56,7 +60,6 @@ fun NavGraph(navController: NavHostController) {
             )
         }
 
-        // Gallery screen (media grid within an album)
         composable(
             route = Screen.Gallery.route,
             arguments = listOf(
@@ -70,6 +73,7 @@ fun NavGraph(navController: NavHostController) {
             GalleryScreen(
                 bucketId = bucketId,
                 bucketName = bucketName,
+                sharedViewModel = sharedViewModel,
                 onMediaClick = { mediaItem ->
                     when (mediaItem.mediaType) {
                         com.aura.gallery.domain.model.MediaType.IMAGE -> {
@@ -84,7 +88,6 @@ fun NavGraph(navController: NavHostController) {
             )
         }
 
-        // Media viewer (image zoom/swipe)
         composable(
             route = Screen.Viewer.route,
             arguments = listOf(
@@ -95,11 +98,11 @@ fun NavGraph(navController: NavHostController) {
 
             MediaViewerScreen(
                 mediaId = mediaId,
+                sharedViewModel = sharedViewModel,
                 onNavigateBack = { navController.popBackStack() }
             )
         }
 
-        // Video player
         composable(
             route = Screen.Player.route,
             arguments = listOf(
@@ -114,7 +117,6 @@ fun NavGraph(navController: NavHostController) {
             )
         }
 
-        // Favorites
         composable(Screen.Favorites.route) {
             FavoritesScreen(
                 onMediaClick = { mediaItem ->
@@ -130,7 +132,6 @@ fun NavGraph(navController: NavHostController) {
             )
         }
 
-        // Trash
         composable(Screen.Trash.route) {
             TrashScreen()
         }
