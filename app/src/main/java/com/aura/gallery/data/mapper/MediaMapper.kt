@@ -1,6 +1,7 @@
 package com.aura.gallery.data.mapper
 
 import android.content.ContentResolver
+import android.content.ContentUris
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore

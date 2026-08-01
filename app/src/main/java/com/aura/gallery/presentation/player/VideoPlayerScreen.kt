@@ -66,6 +66,7 @@ fun VideoPlayerScreen(
     Scaffold(
         topBar = {
             TopAppBar(
+                title = {},
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(

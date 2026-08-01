@@ -38,6 +38,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.aura.gallery.presentation.components.EmptyStateView
 import com.aura.gallery.presentation.theme.FavoriteColor
@@ -62,6 +63,7 @@ fun MediaViewerScreen(
         topBar = {
             if (isUiVisible) {
                 TopAppBar(
+                    title = {},
                     navigationIcon = {
                         IconButton(onClick = onNavigateBack) {
                             Icon(
