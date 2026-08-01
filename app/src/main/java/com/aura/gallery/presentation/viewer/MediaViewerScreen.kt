@@ -120,7 +120,10 @@ fun MediaViewerScreen(
                             tint = Color.White
                         )
                     }
-                    IconButton(onClick = { viewModel.moveToTrash() }) {
+                    IconButton(onClick = {
+                        viewModel.moveToTrash()
+                        onNavigateBack()
+                    }) {
                         Icon(
                             imageVector = Icons.Filled.Delete,
                             contentDescription = "Mover a papelera",

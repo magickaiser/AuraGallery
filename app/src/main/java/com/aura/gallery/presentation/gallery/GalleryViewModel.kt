@@ -5,7 +5,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.aura.gallery.domain.model.MediaItem
 import com.aura.gallery.domain.model.MediaType
+import com.aura.gallery.domain.usecase.DeleteMediaUseCase
 import com.aura.gallery.domain.usecase.GetMediaByAlbumUseCase
+import com.aura.gallery.domain.usecase.MoveToTrashUseCase
+import com.aura.gallery.domain.usecase.ToggleFavoriteUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -18,13 +21,18 @@ data class GalleryUiState(
     val filteredItems: List<MediaItem> = emptyList(),
     val bucketName: String = "",
     val currentFilter: MediaType? = null,
-    val isLoading: Boolean = true
+    val isLoading: Boolean = true,
+    val isSelectionMode: Boolean = false,
+    val selectedIds: Set<Long> = emptySet()
 )
 
 @HiltViewModel
 class GalleryViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val getMediaByAlbumUseCase: GetMediaByAlbumUseCase
+    private val getMediaByAlbumUseCase: GetMediaByAlbumUseCase,
+    private val moveToTrashUseCase: MoveToTrashUseCase,
+    private val toggleFavoriteUseCase: ToggleFavoriteUseCase,
+    private val deleteMediaUseCase: DeleteMediaUseCase
 ) : ViewModel() {
 
     private val bucketId: Long = savedStateHandle.get<Long>("bucketId") ?: 0L
@@ -40,6 +48,70 @@ class GalleryViewModel @Inject constructor(
         _uiState.value = _uiState.value.copy(currentFilter = filter)
         applyFilter()
     }
+
+    // --- Selection mode ---
+
+    fun enterSelectionMode(mediaId: Long) {
+        _uiState.value = _uiState.value.copy(
+            isSelectionMode = true,
+            selectedIds = setOf(mediaId)
+        )
+    }
+
+    fun toggleSelection(mediaId: Long) {
+        val state = _uiState.value
+        val newIds = if (mediaId in state.selectedIds) {
+            state.selectedIds - mediaId
+        } else {
+            state.selectedIds + mediaId
+        }
+        _uiState.value = state.copy(
+            selectedIds = newIds,
+            isSelectionMode = newIds.isNotEmpty()
+        )
+    }
+
+    fun exitSelectionMode() {
+        _uiState.value = _uiState.value.copy(
+            isSelectionMode = false,
+            selectedIds = emptySet()
+        )
+    }
+
+    fun selectAll() {
+        _uiState.value = _uiState.value.copy(
+            selectedIds = _uiState.value.filteredItems.map { it.id }.toSet()
+        )
+    }
+
+    fun trashSelected() {
+        viewModelScope.launch {
+            val selectedMedia = _uiState.value.filteredItems
+                .filter { it.id in _uiState.value.selectedIds }
+            selectedMedia.forEach { moveToTrashUseCase(it) }
+            exitSelectionMode()
+        }
+    }
+
+    fun favoriteSelected() {
+        viewModelScope.launch {
+            val selectedMedia = _uiState.value.filteredItems
+                .filter { it.id in _uiState.value.selectedIds }
+            selectedMedia.forEach { toggleFavoriteUseCase(it) }
+            exitSelectionMode()
+        }
+    }
+
+    fun deleteSelected() {
+        viewModelScope.launch {
+            val selectedMedia = _uiState.value.filteredItems
+                .filter { it.id in _uiState.value.selectedIds }
+            selectedMedia.forEach { deleteMediaUseCase(it) }
+            exitSelectionMode()
+        }
+    }
+
+    // --- Data loading ---
 
     private fun loadMedia() {
         viewModelScope.launch {
